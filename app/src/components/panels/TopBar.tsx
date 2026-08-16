@@ -8,6 +8,8 @@ import {
   Upload,
   Trash2,
   CircleHelp,
+  Lock,
+  LockOpen,
 } from 'lucide-react';
 import type { ViewName } from '@/store';
 import { useStudio } from '@/store';
@@ -57,7 +59,8 @@ export function TopBar({ onHelp }: { onHelp: () => void }) {
   const canUndo = useStudio((s) => s.past.length > 0);
   const canRedo = useStudio((s) => s.future.length > 0);
   const hasBricks = useStudio((s) => s.bricks.length > 0);
-  const { undo, redo, requestView, saveLocal, exportFile, importFile, clearAll, showToast } =
+  const viewLocked = useStudio((s) => s.viewLocked);
+  const { undo, redo, requestView, toggleViewLock, saveLocal, exportFile, importFile, clearAll, showToast } =
     useStudio.getState();
 
   const handleImport = (file: File | undefined) => {
@@ -89,11 +92,34 @@ export function TopBar({ onHelp }: { onHelp: () => void }) {
           <button
             key={v}
             onClick={() => requestView(v)}
-            className="rounded-md px-2.5 py-1 text-xs text-neutral-400 transition-colors hover:bg-white/10 hover:text-neutral-100"
+            disabled={viewLocked}
+            title={viewLocked ? '视角已锁定' : `切换到${label}视角`}
+            className={cn(
+              'rounded-md px-2.5 py-1 text-xs transition-colors',
+              viewLocked
+                ? 'cursor-not-allowed text-neutral-600'
+                : 'text-neutral-400 hover:bg-white/10 hover:text-neutral-100',
+            )}
           >
             {label}
           </button>
         ))}
+        <div className="mx-0.5 h-4 w-px bg-white/10" />
+        <button
+          onClick={() => {
+            toggleViewLock();
+            showToast(viewLocked ? '视角已解锁' : '视角已锁定，解锁后可自由旋转');
+          }}
+          title={viewLocked ? '解锁视角 (L)' : '锁定视角 (L)'}
+          className={cn(
+            'flex h-6 w-6 items-center justify-center rounded-md transition-colors',
+            viewLocked
+              ? 'bg-amber-400 text-neutral-900'
+              : 'text-neutral-400 hover:bg-white/10 hover:text-neutral-100',
+          )}
+        >
+          {viewLocked ? <Lock className="h-3.5 w-3.5" /> : <LockOpen className="h-3.5 w-3.5" />}
+        </button>
       </div>
 
       <div className="mx-1 h-5 w-px bg-white/10" />

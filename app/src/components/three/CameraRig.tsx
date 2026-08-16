@@ -14,6 +14,7 @@ const VIEWS: Record<ViewName, [number, number, number]> = {
 /** 响应视角切换请求, 平滑移动相机 */
 export function CameraRig() {
   const viewRequest = useStudio((s) => s.viewRequest);
+  const viewLocked = useStudio((s) => s.viewLocked);
   const camera = useThree((s) => s.camera);
   const controls = useThree((s) => s.controls) as { addEventListener?: Function; removeEventListener?: Function } | null;
   const dest = useRef<THREE.Vector3 | null>(null);
@@ -21,6 +22,11 @@ export function CameraRig() {
   useEffect(() => {
     if (viewRequest) dest.current = new THREE.Vector3(...VIEWS[viewRequest.name]);
   }, [viewRequest]);
+
+  // 锁定视角时终止进行中的机位动画
+  useEffect(() => {
+    if (viewLocked) dest.current = null;
+  }, [viewLocked]);
 
   // 用户开始拖拽时取消动画
   useEffect(() => {

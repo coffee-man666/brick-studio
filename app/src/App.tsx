@@ -50,6 +50,9 @@ function useKeyboard() {
         case 'r':
           st.rotateGhost();
           break;
+        case 'l':
+          st.toggleViewLock();
+          break;
         case 'delete':
         case 'backspace': {
           const id = st.hover?.brickId;

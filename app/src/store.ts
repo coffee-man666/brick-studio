@@ -24,6 +24,7 @@ interface StudioState {
   past: PlacedBrick[][];
   future: PlacedBrick[][];
   viewRequest: { name: ViewName; ts: number } | null;
+  viewLocked: boolean;
   toast: string | null;
 
   setTool: (t: Tool) => void;
@@ -39,6 +40,7 @@ interface StudioState {
   redo: () => void;
   clearAll: () => void;
   requestView: (v: ViewName) => void;
+  toggleViewLock: () => void;
   saveLocal: () => void;
   loadLocal: () => boolean;
   exportFile: () => void;
@@ -63,6 +65,7 @@ export const useStudio = create<StudioState>()((set, get) => ({
   past: [],
   future: [],
   viewRequest: null,
+  viewLocked: false,
   toast: null,
 
   setTool: (tool) => set({ tool }),
@@ -152,7 +155,17 @@ export const useStudio = create<StudioState>()((set, get) => ({
         : { past: snapshotPush(s.past, s.bricks), future: [], bricks: [] },
     ),
 
-  requestView: (name) => set({ viewRequest: { name, ts: Date.now() } }),
+  requestView: (name) => {
+    // 锁定视角时冻结相机, 忽略机位切换请求
+    if (get().viewLocked) return;
+    set({ viewRequest: { name, ts: Date.now() } });
+  },
+
+  toggleViewLock: () =>
+    set((s) => {
+      const viewLocked = !s.viewLocked;
+      return { viewLocked, viewRequest: viewLocked ? null : s.viewRequest };
+    }),
 
   saveLocal: () => {
     try {

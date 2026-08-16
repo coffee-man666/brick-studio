@@ -9,6 +9,7 @@ import {
 const ROWS: { keys: string; desc: string }[] = [
   { keys: 'B / E / P / I', desc: '切换 搭建 / 擦除 / 填色 / 取样 工具' },
   { keys: 'R', desc: '旋转手中砖块 90°' },
+  { keys: 'L', desc: '锁定 / 解锁视角（锁定后无法旋转、平移、缩放）' },
   { keys: 'Ctrl + Z', desc: '撤销' },
   { keys: 'Ctrl + Shift + Z / Ctrl + Y', desc: '重做' },
   { keys: 'Ctrl + S', desc: '保存到浏览器' },

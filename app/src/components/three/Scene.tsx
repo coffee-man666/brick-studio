@@ -27,6 +27,7 @@ export function Scene() {
   const tool = useStudio((s) => s.tool);
   const selectedType = useStudio((s) => s.selectedType);
   const rotation = useStudio((s) => s.rotation);
+  const viewLocked = useStudio((s) => s.viewLocked);
   const setHover = useStudio((s) => s.setHover);
 
   const heights = useMemo(() => computeHeights(bricks), [bricks]);
@@ -94,6 +95,7 @@ export function Scene() {
       dpr={[1, 2]}
       camera={{ position: [26, 23, 26], fov: 38, near: 0.1, far: 400 }}
       onPointerLeave={handleOut}
+      onContextMenu={(e) => e.preventDefault()}
     >
       <color attach="background" args={['#0e1117']} />
       <fog attach="fog" args={['#0e1117', 70, 160]} />
@@ -146,6 +148,7 @@ export function Scene() {
 
       <OrbitControls
         makeDefault
+        enabled={!viewLocked}
         enableDamping
         dampingFactor={0.09}
         minDistance={6}
